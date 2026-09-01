@@ -4,7 +4,12 @@ import { protect } from "../middleware/auth.js";
 
 const router = Router();
 
+
+// ==================================================
 // GET ALL ACTIVE SERVICES
+// GET /api/services
+// ==================================================
+
 router.get("/", async (req, res) => {
   try {
     const services = await Service.find({
@@ -12,6 +17,7 @@ router.get("/", async (req, res) => {
     }).sort({ createdAt: -1 });
 
     res.json(services);
+
   } catch (error) {
     res.status(500).json({
       message: error.message
@@ -19,10 +25,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+// ==================================================
 // GET SINGLE SERVICE
+// GET /api/services/:id
+// ==================================================
+
 router.get("/:id", async (req, res) => {
   try {
-    const service = await Service.findById(req.params.id);
+    const service = await Service.findById(
+      req.params.id
+    );
 
     if (!service) {
       return res.status(404).json({
@@ -31,19 +44,34 @@ router.get("/:id", async (req, res) => {
     }
 
     res.json(service);
+
   } catch (error) {
+    console.error(
+      "Get single service error:",
+      error
+    );
+
     res.status(400).json({
       message: "Invalid service ID"
     });
   }
 });
 
+
+// ==================================================
 // ADD SERVICE
+// POST /api/services
+// Admin only
+// ==================================================
+
 router.post("/", protect, async (req, res) => {
   try {
-    const service = await Service.create(req.body);
+    const service = await Service.create(
+      req.body
+    );
 
     res.status(201).json(service);
+
   } catch (error) {
     res.status(400).json({
       message: error.message
@@ -51,17 +79,24 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
+
+// ==================================================
 // UPDATE SERVICE
+// PATCH /api/services/:id
+// Admin only
+// ==================================================
+
 router.patch("/:id", protect, async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
+    const service =
+      await Service.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true,
+          runValidators: true
+        }
+      );
 
     if (!service) {
       return res.status(404).json({
@@ -70,25 +105,38 @@ router.patch("/:id", protect, async (req, res) => {
     }
 
     res.json(service);
+
   } catch (error) {
+    console.error(
+      "Update service error:",
+      error
+    );
+
     res.status(400).json({
       message: error.message
     });
   }
 });
 
+
+// ==================================================
 // DEACTIVATE SERVICE
+// DELETE /api/services/:id
+// Admin only
+// ==================================================
+
 router.delete("/:id", protect, async (req, res) => {
   try {
-    const service = await Service.findByIdAndUpdate(
-      req.params.id,
-      {
-        active: false
-      },
-      {
-        new: true
-      }
-    );
+    const service =
+      await Service.findByIdAndUpdate(
+        req.params.id,
+        {
+          active: false
+        },
+        {
+          new: true
+        }
+      );
 
     if (!service) {
       return res.status(404).json({
@@ -97,14 +145,22 @@ router.delete("/:id", protect, async (req, res) => {
     }
 
     res.json({
-      message: "Service deactivated successfully",
+      message:
+        "Service deactivated successfully",
       service
     });
+
   } catch (error) {
+    console.error(
+      "Delete service error:",
+      error
+    );
+
     res.status(400).json({
       message: error.message
     });
   }
 });
+
 
 export default router;
