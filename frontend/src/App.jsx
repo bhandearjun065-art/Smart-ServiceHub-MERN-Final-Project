@@ -937,20 +937,19 @@ function Booking() {
       try {
 
         setLoading(true);
+const bookingData = {
+  name,
+  phone,
+  date,
+  time,
+  address,
 
+  serviceName: service.title,
+  serviceCategory: service.category,
+  servicePrice: service.price,
 
-        const bookingData = {
-
-          name,
-          phone,
-          date,
-          time,
-          address,
-
-          status: "Pending"
-
-        };
-
+  status: "Pending"
+};
 
         const response =
           await createBooking(
@@ -1767,7 +1766,30 @@ function Admin() {
                           "No date"}
                       </span>
 
+<div
+  style={{
+    marginTop: "8px",
+    padding: "10px 12px",
+    borderRadius: "10px",
+    background: "rgba(124, 58, 237, 0.10)",
+    border: "1px solid rgba(124, 58, 237, 0.18)"
+  }}
+>
+  <strong>
+    🔧 {booking.serviceName || "Service not available"}
+  </strong>
 
+  <div
+    style={{
+      fontSize: "13px",
+      opacity: 0.75,
+      marginTop: "4px"
+    }}
+  >
+    {booking.serviceCategory || "General"}{" "}
+    • ₹{booking.servicePrice || 0}
+  </div>
+</div>
                       <small>
                         {booking.address ||
                           "No address"}
