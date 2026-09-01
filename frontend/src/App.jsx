@@ -168,15 +168,14 @@ function Navbar() {
           Admin
         </Link>
 
-        <Link
-          className="nav-cta"
-          to="/book/1"
-          onClick={() => setOpen(false)}
-        >
-          Book now
-          <ArrowRight size={16} />
-        </Link>
-
+      <Link 
+  className="nav-cta" 
+  to="/"
+  onClick={() => setOpen(false)} 
+> 
+  Book now 
+  <ArrowRight size={16} /> 
+</Link>
       </div>
 
     </nav>
