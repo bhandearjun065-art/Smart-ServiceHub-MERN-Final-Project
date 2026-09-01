@@ -14,39 +14,45 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API Routes
+app.get("/", (req, res) => {
+  res.json({
+    message: "Smart ServiceHub API is running"
+  });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    ok: true,
+    service: "Smart ServiceHub"
+  });
+});
+
+// API ROUTES
 app.use("/api/services", serviceRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth", authRoutes);
 
-// Home Route
-app.get("/", (req, res) => {
-  res.json({
-    message: "Smart ServiceHub API is running",
+// 404 HANDLER
+app.use((req, res) => {
+  res.status(404).json({
+    message: `Route not found: ${req.method} ${req.originalUrl}`
   });
 });
 
-// Health Check
-app.get("/api/health", (req, res) => {
-  res.json({
-    ok: true,
-    service: "Smart ServiceHub",
-  });
-});
+const PORT = process.env.PORT || 5000;
 
-// MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected successfully");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
   .catch((error) => {
-    console.log("MongoDB connection failed:", error.message);
+    console.error(
+      "MongoDB connection failed:",
+      error.message
+    );
   });
-
-// Server
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
