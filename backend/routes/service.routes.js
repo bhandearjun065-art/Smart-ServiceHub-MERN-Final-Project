@@ -4,8 +4,7 @@ import { protect } from "../middleware/auth.js";
 
 const router = Router();
 
-// ================= GET ACTIVE SERVICES =================
-
+// GET ALL ACTIVE SERVICES
 router.get("/", async (req, res) => {
   try {
     const services = await Service.find({
@@ -19,13 +18,11 @@ router.get("/", async (req, res) => {
     });
   }
 });
-// ================= GET SINGLE SERVICE =================
 
+// GET SINGLE SERVICE
 router.get("/:id", async (req, res) => {
   try {
-    const service = await Service.findById(
-      req.params.id
-    );
+    const service = await Service.findById(req.params.id);
 
     if (!service) {
       return res.status(404).json({
@@ -34,7 +31,6 @@ router.get("/:id", async (req, res) => {
     }
 
     res.json(service);
-
   } catch (error) {
     res.status(400).json({
       message: "Invalid service ID"
@@ -42,10 +38,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
-// ================= ADD SERVICE =================
-// Admin only
-
+// ADD SERVICE
 router.post("/", protect, async (req, res) => {
   try {
     const service = await Service.create(req.body);
@@ -58,21 +51,17 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-
-// ================= UPDATE SERVICE =================
-// Admin only
-
+// UPDATE SERVICE
 router.patch("/:id", protect, async (req, res) => {
   try {
-    const service =
-      await Service.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true
-        }
-      );
+    const service = await Service.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true
+      }
+    );
 
     if (!service) {
       return res.status(404).json({
@@ -81,7 +70,6 @@ router.patch("/:id", protect, async (req, res) => {
     }
 
     res.json(service);
-
   } catch (error) {
     res.status(400).json({
       message: error.message
@@ -89,22 +77,18 @@ router.patch("/:id", protect, async (req, res) => {
   }
 });
 
-
-// ================= DEACTIVATE SERVICE =================
-// Admin only
-
+// DEACTIVATE SERVICE
 router.delete("/:id", protect, async (req, res) => {
   try {
-    const service =
-      await Service.findByIdAndUpdate(
-        req.params.id,
-        {
-          active: false
-        },
-        {
-          new: true
-        }
-      );
+    const service = await Service.findByIdAndUpdate(
+      req.params.id,
+      {
+        active: false
+      },
+      {
+        new: true
+      }
+    );
 
     if (!service) {
       return res.status(404).json({
@@ -116,13 +100,11 @@ router.delete("/:id", protect, async (req, res) => {
       message: "Service deactivated successfully",
       service
     });
-
   } catch (error) {
     res.status(400).json({
       message: error.message
     });
   }
 });
-
 
 export default router;
