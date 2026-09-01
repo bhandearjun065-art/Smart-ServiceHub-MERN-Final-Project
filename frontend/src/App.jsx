@@ -14,7 +14,6 @@ import {
   Clock3,
   Menu,
   ShieldCheck,
-  Sparkles,
   Star,
   Users,
   X,
@@ -28,13 +27,13 @@ import {
   createBooking,
   getBookings,
   updateBookingStatus,
-  getServices,getBookingById,
-  createService
+  getBookingById,
+  getServices,
+  createService,
+  getServiceById,
 } from "./services/api.js";
 
 import AdminLogin from "./AdminLogin.jsx";
-import TrackBooking from "./TrackBooking.jsx";
-
 import "./styles.css";
 
 
@@ -116,12 +115,11 @@ function Navbar() {
         onClick={() => setOpen(false)}
       >
         <span className="brand-mark">
-  AB
-</span>
+          AB
+        </span>
 
-Service<span>Hub</span>
+        Service<span>Hub</span>
       </Link>
-
 
       <button
         className="menu-btn"
@@ -131,11 +129,8 @@ Service<span>Hub</span>
         {open ? <X /> : <Menu />}
       </button>
 
-
       <div
-        className={`nav-links ${
-          open ? "show" : ""
-        }`}
+        className={`nav-links ${open ? "show" : ""}`}
       >
 
         <Link
@@ -145,14 +140,12 @@ Service<span>Hub</span>
           Home
         </Link>
 
-
         <a
           href="/#services"
           onClick={() => setOpen(false)}
         >
           Services
         </a>
-
 
         <a
           href="/#how"
@@ -161,7 +154,6 @@ Service<span>Hub</span>
           How it works
         </a>
 
-
         <Link
           to="/track-booking"
           onClick={() => setOpen(false)}
@@ -169,14 +161,12 @@ Service<span>Hub</span>
           Track Booking
         </Link>
 
-
         <Link
           to="/admin"
           onClick={() => setOpen(false)}
         >
           Admin
         </Link>
-
 
         <Link
           className="nav-cta"
@@ -204,18 +194,22 @@ function Home() {
 
   const [services, setServices] =
     useState(defaultServices);
-const [showAddService, setShowAddService] = useState(false);
 
-const [newService, setNewService] = useState({
-  title: "",
-  category: "",
-  price: "",
-  duration: "",
-  image: "",
-  rating: ""
-});
+  const [showAddService, setShowAddService] =
+    useState(false);
 
-const isAdmin = !!localStorage.getItem("adminToken");
+  const [newService, setNewService] = useState({
+    title: "",
+    category: "",
+    price: "",
+    duration: "",
+    image: "",
+    rating: ""
+  });
+
+  const isAdmin =
+    !!localStorage.getItem("adminToken");
+
 
   useEffect(() => {
 
@@ -237,7 +231,8 @@ const isAdmin = !!localStorage.getItem("adminToken");
               title: service.title,
               category:
                 service.category || "General",
-              price: service.price || 0,
+              price:
+                service.price || 0,
               time:
                 service.duration || "1 hr",
               icon:
@@ -262,60 +257,83 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
     loadServices();
 
-  }, []); 
+  }, []);
+
+
+  // ==================================================
+  // ADD SERVICE - ADMIN ONLY
+  // ==================================================
+
   const handleAddService = async (e) => {
-  e.preventDefault();
 
-  try {
-    const response = await createService({
-      title: newService.title,
-      category: newService.category,
-      price: Number(newService.price),
-      duration: newService.duration,
-      image: newService.image || "🔧",
-      rating: Number(newService.rating) || 5,
-      active: true
-    });
+    e.preventDefault();
 
-    const service = response.data;
+    try {
 
-    const formattedService = {
-      id: service._id,
-      title: service.title,
-      category: service.category || "General",
-      price: service.price || 0,
-      time: service.duration || "1 hr",
-      icon: service.image || "🔧",
-      rating: service.rating || 5
-    };
+      const response =
+        await createService({
+          title: newService.title,
+          category: newService.category,
+          price: Number(newService.price),
+          duration: newService.duration,
+          image:
+            newService.image || "🔧",
+          rating:
+            Number(newService.rating) || 5,
+          active: true
+        });
 
-    setServices((previous) => [
-      ...previous,
-      formattedService
-    ]);
+      const service =
+        response.data;
 
-    setNewService({
-      title: "",
-      category: "",
-      price: "",
-      duration: "",
-      image: "",
-      rating: ""
-    });
+      const formattedService = {
+        id: service._id,
+        title: service.title,
+        category:
+          service.category || "General",
+        price:
+          service.price || 0,
+        time:
+          service.duration || "1 hr",
+        icon:
+          service.image || "🔧",
+        rating:
+          service.rating || 5
+      };
 
-    setShowAddService(false);
+      setServices((previous) => [
+        ...previous,
+        formattedService
+      ]);
 
-    alert("Service added successfully!");
+      setNewService({
+        title: "",
+        category: "",
+        price: "",
+        duration: "",
+        image: "",
+        rating: ""
+      });
 
-  } catch (error) {
-    console.error("Add service error:", error);
+      setShowAddService(false);
 
-    alert(
-      error?.response?.data?.message ||
-      "Failed to add service."
-    );
-  }
-};
+      alert(
+        "Service added successfully!"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Add service error:",
+        error
+      );
+
+      alert(
+        error?.response?.data?.message ||
+        "Failed to add service."
+      );
+    }
+  };
 
 
   const filtered =
@@ -333,7 +351,6 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
       <Navbar />
 
-
       <main>
 
         {/* HERO */}
@@ -342,7 +359,6 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
           <div className="hero-orb orb-a"></div>
           <div className="hero-orb orb-b"></div>
-
 
           <div className="hero-copy reveal">
 
@@ -353,7 +369,6 @@ const isAdmin = !!localStorage.getItem("adminToken");
               Trusted local services
 
             </div>
-
 
             <h1>
 
@@ -367,13 +382,11 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
             </h1>
 
-
             <p>
               Discover reliable professionals,
               compare services and schedule
               your appointment in a few clicks.
             </p>
-
 
             <div className="hero-actions">
 
@@ -385,7 +398,6 @@ const isAdmin = !!localStorage.getItem("adminToken");
                 <ArrowRight size={18} />
               </a>
 
-
               <a
                 className="btn ghost"
                 href="#how"
@@ -395,7 +407,6 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
             </div>
 
-
             <div className="trust-row">
 
               <div>
@@ -403,12 +414,10 @@ const isAdmin = !!localStorage.getItem("adminToken");
                 <span>average rating</span>
               </div>
 
-
               <div>
                 <b>10k+</b>
                 <span>happy customers</span>
               </div>
-
 
               <div>
                 <b>24/7</b>
@@ -434,13 +443,11 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
             </div>
 
-
             <div className="booking-preview">
 
               <div className="service-icon">
                 🚗
               </div>
-
 
               <div>
 
@@ -456,11 +463,9 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
             </div>
 
-
             <div className="progress">
               <span></span>
             </div>
-
 
             <div className="mini-foot">
 
@@ -498,19 +503,26 @@ const isAdmin = !!localStorage.getItem("adminToken");
                 Everything you need,
                 <em> in one place.</em>
               </h2>
+
               {isAdmin && (
-  <button
-    className="btn primary"
-    type="button"
-    onClick={() =>
-      setShowAddService(!showAddService)
-    }
-  >
-    {showAddService
-      ? "✕ Close"
-      : "+ Add Service"}
-  </button>
-)}
+
+                <button
+                  className="btn primary"
+                  type="button"
+                  onClick={() =>
+                    setShowAddService(
+                      !showAddService
+                    )
+                  }
+                >
+
+                  {showAddService
+                    ? "✕ Close"
+                    : "+ Add Service"}
+
+                </button>
+
+              )}
 
             </div>
 
@@ -522,7 +534,9 @@ const isAdmin = !!localStorage.getItem("adminToken");
               <input
                 value={query}
                 onChange={(e) =>
-                  setQuery(e.target.value)
+                  setQuery(
+                    e.target.value
+                  )
                 }
                 placeholder="Search services..."
               />
@@ -532,123 +546,180 @@ const isAdmin = !!localStorage.getItem("adminToken");
           </div>
 
 
+          {/* ADD SERVICE FORM */}
+
+          {isAdmin &&
+            showAddService && (
+
+              <form
+                className="booking-form"
+                onSubmit={
+                  handleAddService
+                }
+                style={{
+                  marginBottom: "30px"
+                }}
+              >
+
+                <h2>
+                  Add New Service
+                </h2>
+
+                <label>
+
+                  Service Title
+
+                  <input
+                    type="text"
+                    required
+                    value={
+                      newService.title
+                    }
+                    onChange={(e) =>
+                      setNewService({
+                        ...newService,
+                        title:
+                          e.target.value
+                      })
+                    }
+                    placeholder="e.g. Mobile Repair"
+                  />
+
+                </label>
+
+
+                <label>
+
+                  Category
+
+                  <input
+                    type="text"
+                    required
+                    value={
+                      newService.category
+                    }
+                    onChange={(e) =>
+                      setNewService({
+                        ...newService,
+                        category:
+                          e.target.value
+                      })
+                    }
+                    placeholder="e.g. Electronics"
+                  />
+
+                </label>
+
+
+                <label>
+
+                  Price
+
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={
+                      newService.price
+                    }
+                    onChange={(e) =>
+                      setNewService({
+                        ...newService,
+                        price:
+                          e.target.value
+                      })
+                    }
+                    placeholder="500"
+                  />
+
+                </label>
+
+
+                <label>
+
+                  Duration
+
+                  <input
+                    type="text"
+                    required
+                    value={
+                      newService.duration
+                    }
+                    onChange={(e) =>
+                      setNewService({
+                        ...newService,
+                        duration:
+                          e.target.value
+                      })
+                    }
+                    placeholder="1 hr"
+                  />
+
+                </label>
+
+
+                <label>
+
+                  Image / Icon
+
+                  <input
+                    type="text"
+                    value={
+                      newService.image
+                    }
+                    onChange={(e) =>
+                      setNewService({
+                        ...newService,
+                        image:
+                          e.target.value
+                      })
+                    }
+                    placeholder="🔧"
+                  />
+
+                </label>
+
+
+                <label>
+
+                  Rating
+
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    value={
+                      newService.rating
+                    }
+                    onChange={(e) =>
+                      setNewService({
+                        ...newService,
+                        rating:
+                          e.target.value
+                      })
+                    }
+                    placeholder="5"
+                  />
+
+                </label>
+
+
+                <button
+                  type="submit"
+                  className="btn primary"
+                >
+                  Add Service
+                </button>
+
+              </form>
+
+            )}
+
+
+          {/* SERVICE CARDS */}
+
           <div className="service-grid">
-            {isAdmin && showAddService && (
-  <form
-    className="booking-form"
-    onSubmit={handleAddService}
-    style={{ marginBottom: "30px" }}
-  >
-    <h2>Add New Service</h2>
-
-    <label>
-      Service Title
-      <input
-        type="text"
-        required
-        value={newService.title}
-        onChange={(e) =>
-          setNewService({
-            ...newService,
-            title: e.target.value
-          })
-        }
-        placeholder="e.g. Mobile Repair"
-      />
-    </label>
-
-    <label>
-      Category
-      <input
-        type="text"
-        required
-        value={newService.category}
-        onChange={(e) =>
-          setNewService({
-            ...newService,
-            category: e.target.value
-          })
-        }
-        placeholder="e.g. Electronics"
-      />
-    </label>
-
-    <label>
-      Price
-      <input
-        type="number"
-        required
-        min="0"
-        value={newService.price}
-        onChange={(e) =>
-          setNewService({
-            ...newService,
-            price: e.target.value
-          })
-        }
-        placeholder="500"
-      />
-    </label>
-
-    <label>
-      Duration
-      <input
-        type="text"
-        required
-        value={newService.duration}
-        onChange={(e) =>
-          setNewService({
-            ...newService,
-            duration: e.target.value
-          })
-        }
-        placeholder="1 hr"
-      />
-    </label>
-
-    <label>
-      Image / Icon
-      <input
-        type="text"
-        value={newService.image}
-        onChange={(e) =>
-          setNewService({
-            ...newService,
-            image: e.target.value
-          })
-        }
-        placeholder="🔧"
-      />
-    </label>
-
-    <label>
-      Rating
-      <input
-        type="number"
-        min="0"
-        max="5"
-        step="0.1"
-        value={newService.rating}
-        onChange={(e) =>
-          setNewService({
-            ...newService,
-            rating: e.target.value
-          })
-        }
-        placeholder="5"
-      />
-    </label>
-
-    <button
-      type="submit"
-      className="btn primary"
-    >
-      Add Service
-    </button>
-  </form>
-)}
-
-<div className="service-grid"></div>
 
             {filtered.map(
               (s, i) => (
@@ -667,7 +738,6 @@ const isAdmin = !!localStorage.getItem("adminToken");
                     <div className="service-icon large">
                       {s.icon}
                     </div>
-
 
                     <span className="rating">
 
@@ -718,7 +788,9 @@ const isAdmin = !!localStorage.getItem("adminToken");
 
                     Book service
 
-                    <ArrowRight size={16} />
+                    <ArrowRight
+                      size={16}
+                    />
 
                   </Link>
 
@@ -739,28 +811,33 @@ const isAdmin = !!localStorage.getItem("adminToken");
           <div>
             <Users />
             <b>10,000+</b>
-            <span>customers served</span>
+            <span>
+              customers served
+            </span>
           </div>
-
 
           <div>
             <ShieldCheck />
             <b>500+</b>
-            <span>verified professionals</span>
+            <span>
+              verified professionals
+            </span>
           </div>
-
 
           <div>
             <Star />
             <b>4.9/5</b>
-            <span>customer rating</span>
+            <span>
+              customer rating
+            </span>
           </div>
-
 
           <div>
             <Zap />
             <b>30 min</b>
-            <span>average response</span>
+            <span>
+              average response
+            </span>
           </div>
 
         </section>
@@ -846,30 +923,29 @@ const isAdmin = !!localStorage.getItem("adminToken");
             the whole experience felt premium.
           </p>
 
-
           <div className="person">
 
-
             <div className="avatar">
-  AB
-</div>
+              AB
+            </div>
 
-<div>
-  <b>
-    Arjun D Bhande
-  </b>
+            <div>
 
-  <span>
-    Founder & Owner · ServiceHub
-  </span>
-</div>
+              <b>
+                Arjun D Bhande
+              </b>
+
+              <span>
+                Founder & Owner · ServiceHub
+              </span>
+
+            </div>
 
           </div>
 
         </section>
 
       </main>
-
 
       <Footer />
 
@@ -878,125 +954,280 @@ const isAdmin = !!localStorage.getItem("adminToken");
 }
 
 
+
+// ==================================================
+// BOOKING
+// ==================================================
+
 // ==================================================
 // BOOKING
 // ==================================================
 
 function Booking() {
-
   const { id } = useParams();
 
-  const numericId =
-    Number(id);
+  const [service, setService] = useState(null);
+
+  const [serviceLoading, setServiceLoading] =
+    useState(true);
+
+  const [done, setDone] = useState(false);
+
+  const [date, setDate] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const [bookingId, setBookingId] = useState("");
 
 
-  const service =
-    defaultServices.find(
-      (s) =>
-        s.id === numericId
-    ) ||
-    defaultServices[0];
+  // ==================================================
+  // LOAD SERVICE FROM BACKEND
+  // ==================================================
 
+  useEffect(() => {
 
-  const [done, setDone] =
-    useState(false);
-
-  const [date, setDate] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [bookingId, setBookingId] =
-    useState("");
-
-
-  const handleBooking =
-    async (e) => {
-
-      e.preventDefault();
-
-
-      const form =
-        e.target;
-
-
-      const name =
-        form.elements.name.value;
-
-      const phone =
-        form.elements.phone.value;
-
-      const time =
-        form.elements.time.value;
-
-      const address =
-        form.elements.address.value;
-
+    const loadService = async () => {
 
       try {
 
-        setLoading(true);
-const bookingData = {
-  name,
-  phone,
-  date,
-  time,
-  address,
-
-  serviceName: service.title,
-  serviceCategory: service.category,
-  servicePrice: service.price,
-
-  status: "Pending"
-};
+        setServiceLoading(true);
 
         const response =
-          await createBooking(
-            bookingData
-          );
+          await getServiceById(id);
 
+        const data =
+          response.data;
 
-        const newBookingId =
-          response.data._id;
+        setService({
+          id: data._id,
 
+          title:
+            data.title,
 
-        setBookingId(
-          newBookingId
-        );
+          category:
+            data.category || "General",
 
+          price:
+            data.price || 0,
 
-        localStorage.setItem(
-          "customerBookingId",
-          newBookingId
-        );
+          time:
+            data.duration || "1 hr",
 
+          icon:
+            data.image || "🔧",
 
-        setDone(true);
-
+          rating:
+            data.rating || 5
+        });
 
       } catch (error) {
 
         console.error(
-          "Booking error:",
+          "Service loading error:",
           error
         );
 
-
-        alert(
-          error?.response?.data
-            ?.message ||
-          "Booking failed. Please try again."
-        );
+        setService(null);
 
       } finally {
 
-        setLoading(false);
+        setServiceLoading(false);
 
       }
 
     };
 
+    loadService();
+
+  }, [id]);
+
+
+  // ==================================================
+  // SERVICE LOADING
+  // ==================================================
+
+  if (serviceLoading) {
+
+    return (
+      <>
+        <Navbar />
+
+        <div className="success-page">
+
+          <div className="eyebrow">
+            Service
+          </div>
+
+          <h1>
+            Loading service...
+          </h1>
+
+          <p>
+            Please wait while we load
+            the service details.
+          </p>
+
+        </div>
+
+        <Footer />
+      </>
+    );
+
+  }
+
+
+  // ==================================================
+  // SERVICE NOT FOUND
+  // ==================================================
+
+  if (!service) {
+
+    return (
+      <>
+        <Navbar />
+
+        <div className="success-page">
+
+          <div className="eyebrow">
+            Service unavailable
+          </div>
+
+          <h1>
+            Service not found.
+          </h1>
+
+          <p>
+            The requested service could
+            not be found.
+          </p>
+
+          <Link
+            className="btn primary"
+            to="/"
+          >
+            Back to Home
+            <ArrowRight size={18} />
+          </Link>
+
+        </div>
+
+        <Footer />
+      </>
+    );
+
+  }
+
+
+  // ==================================================
+  // HANDLE BOOKING
+  // ==================================================
+
+  const handleBooking = async (e) => {
+
+    e.preventDefault();
+
+    const form = e.target;
+
+    const name =
+      form.elements.name.value;
+
+    const phone =
+      form.elements.phone.value;
+
+    const time =
+      form.elements.time.value;
+
+    const address =
+      form.elements.address.value;
+
+
+    try {
+
+      setLoading(true);
+
+
+      const bookingData = {
+
+        name,
+
+        phone,
+
+        date,
+
+        time,
+
+        address,
+
+        serviceName:
+          service.title,
+
+        serviceCategory:
+          service.category,
+
+        servicePrice:
+          Number(service.price),
+
+        status:
+          "Pending"
+
+      };
+
+
+      console.log(
+        "Booking data:",
+        bookingData
+      );
+
+
+      const response =
+        await createBooking(
+          bookingData
+        );
+
+
+      const newBookingId =
+        response.data._id;
+
+
+      setBookingId(
+        newBookingId
+      );
+
+
+      localStorage.setItem(
+        "customerBookingId",
+        newBookingId
+      );
+
+
+      setDone(true);
+
+
+    } catch (error) {
+
+      console.error(
+        "Booking error:",
+        error
+      );
+
+
+      alert(
+        error?.response?.data?.message ||
+        "Booking failed. Please try again."
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+
+  // ==================================================
+  // BOOKING SUCCESS
+  // ==================================================
 
   if (done) {
 
@@ -1004,13 +1235,14 @@ const bookingData = {
       <>
         <Navbar />
 
-
         <div className="success-page">
 
           <div className="success-icon">
+
             <CheckCircle2
               size={44}
             />
+
           </div>
 
 
@@ -1025,30 +1257,75 @@ const bookingData = {
 
 
           <p>
+
             Your{" "}
+
             <b>
               {service.title}
             </b>{" "}
-            booking has been
-            submitted successfully.
+
+            booking has been submitted
+            successfully.
+
           </p>
 
+
+          {/* BOOKING DETAILS */}
 
           <div
             style={{
               margin: "20px 0",
-              padding: "16px",
-              borderRadius: "12px",
+              padding: "18px",
+              borderRadius: "14px",
               background:
-                "rgba(255,255,255,0.06)"
+                "rgba(255,255,255,0.06)",
+              border:
+                "1px solid rgba(255,255,255,0.10)",
+              textAlign: "left"
             }}
           >
 
-            <span>
-              Booking ID
-            </span>
+            <p>
 
-            <br />
+              <b>
+                Service:
+              </b>{" "}
+
+              {service.title}
+
+            </p>
+
+
+            <p>
+
+              <b>
+                Category:
+              </b>{" "}
+
+              {service.category}
+
+            </p>
+
+
+            <p>
+
+              <b>
+                Price:
+              </b>{" "}
+
+              ₹{service.price}
+
+            </p>
+
+
+            <p>
+
+              <b>
+                Booking ID:
+              </b>
+
+            </p>
+
 
             <strong
               style={{
@@ -1059,14 +1336,28 @@ const bookingData = {
               {bookingId}
             </strong>
 
-            <br />
 
-            <small>
-              Status: Pending
-            </small>
+            <p
+              style={{
+                marginTop: "10px"
+              }}
+            >
+
+              <b>
+                Status:
+              </b>{" "}
+
+
+              <span className="badge pending">
+                Pending
+              </span>
+
+            </p>
 
           </div>
 
+
+          {/* BUTTONS */}
 
           <div
             style={{
@@ -1092,27 +1383,33 @@ const bookingData = {
               to="/"
             >
               Back to home
-              <ArrowRight size={18} />
+              <ArrowRight
+                size={18}
+              />
             </Link>
 
           </div>
 
         </div>
 
-
         <Footer />
-
       </>
     );
+
   }
 
+
+  // ==================================================
+  // BOOKING FORM
+  // ==================================================
 
   return (
     <>
       <Navbar />
 
-
       <section className="booking-page">
+
+        {/* SERVICE INFO */}
 
         <div className="booking-info">
 
@@ -1154,21 +1451,22 @@ const bookingData = {
               <Star />
 
               {service.rating}
-              rating
+
+              {" "}rating
 
             </span>
 
 
             <strong>
-
               ₹{service.price}
-
             </strong>
 
           </div>
 
         </div>
 
+
+        {/* BOOKING FORM */}
 
         <form
           className="booking-form"
@@ -1179,6 +1477,50 @@ const bookingData = {
             Schedule your service
           </h2>
 
+
+          {/* SELECTED SERVICE */}
+
+          <div
+            style={{
+              padding: "14px",
+              marginBottom: "18px",
+              borderRadius: "12px",
+              background:
+                "rgba(124, 58, 237, 0.10)",
+              border:
+                "1px solid rgba(124, 58, 237, 0.20)"
+            }}
+          >
+
+            <strong>
+
+              {service.icon}{" "}
+
+              {service.title}
+
+            </strong>
+
+
+            <div
+              style={{
+                marginTop: "5px",
+                fontSize: "13px",
+                opacity: 0.75
+              }}
+            >
+
+              {service.category}
+
+              {" • "}
+
+              ₹{service.price}
+
+            </div>
+
+          </div>
+
+
+          {/* NAME */}
 
           <label>
 
@@ -1193,6 +1535,8 @@ const bookingData = {
           </label>
 
 
+          {/* PHONE */}
+
           <label>
 
             Phone number
@@ -1206,6 +1550,8 @@ const bookingData = {
 
           </label>
 
+
+          {/* DATE */}
 
           <label>
 
@@ -1231,6 +1577,8 @@ const bookingData = {
           </label>
 
 
+          {/* TIME */}
+
           <label>
 
             Time slot
@@ -1244,19 +1592,19 @@ const bookingData = {
                 Select a time
               </option>
 
-              <option>
+              <option value="10:00 AM">
                 10:00 AM
               </option>
 
-              <option>
+              <option value="1:00 PM">
                 1:00 PM
               </option>
 
-              <option>
+              <option value="4:30 PM">
                 4:30 PM
               </option>
 
-              <option>
+              <option value="7:00 PM">
                 7:00 PM
               </option>
 
@@ -1264,6 +1612,8 @@ const bookingData = {
 
           </label>
 
+
+          {/* ADDRESS */}
 
           <label>
 
@@ -1277,6 +1627,8 @@ const bookingData = {
 
           </label>
 
+
+          {/* SUBMIT */}
 
           <button
             type="submit"
@@ -1298,13 +1650,11 @@ const bookingData = {
 
       </section>
 
-
       <Footer />
 
     </>
   );
 }
-
 
 // ==================================================
 // PROTECTED ADMIN
@@ -1317,7 +1667,6 @@ function ProtectedAdmin() {
       "adminToken"
     );
 
-
   if (!token) {
 
     return (
@@ -1326,15 +1675,13 @@ function ProtectedAdmin() {
 
   }
 
-
   return <Admin />;
 }
 
 
 // ==================================================
 // ADMIN DASHBOARD
-// ==================================================
-
+//
 function Admin() {
 
   const navigate =
@@ -1406,6 +1753,7 @@ function Admin() {
           );
 
           return;
+
         }
 
 
@@ -1514,7 +1862,6 @@ function Admin() {
     <>
       <Navbar />
 
-
       <section className="admin-page">
 
         <div className="admin-head">
@@ -1525,11 +1872,9 @@ function Admin() {
               Management console
             </div>
 
-
             <h1>
               Good afternoon, Admin.
             </h1>
-
 
             <p>
               Here's what is happening
@@ -1556,9 +1901,7 @@ function Admin() {
               }
             >
 
-              <LogOut
-                size={16}
-              />
+              <LogOut size={16} />
 
               Logout
 
@@ -1573,9 +1916,7 @@ function Admin() {
               }
             >
 
-              <RefreshCw
-                size={16}
-              />
+              <RefreshCw size={16} />
 
               Refresh
 
@@ -1712,8 +2053,7 @@ function Admin() {
                 Loading bookings...
               </p>
 
-            ) : bookings.length ===
-              0 ? (
+            ) : bookings.length === 0 ? (
 
               <p
                 style={{
@@ -1766,30 +2106,59 @@ function Admin() {
                           "No date"}
                       </span>
 
-<div
-  style={{
-    marginTop: "8px",
-    padding: "10px 12px",
-    borderRadius: "10px",
-    background: "rgba(124, 58, 237, 0.10)",
-    border: "1px solid rgba(124, 58, 237, 0.18)"
-  }}
->
-  <strong>
-    🔧 {booking.serviceName || "Service not available"}
-  </strong>
 
-  <div
-    style={{
-      fontSize: "13px",
-      opacity: 0.75,
-      marginTop: "4px"
-    }}
-  >
-    {booking.serviceCategory || "General"}{" "}
-    • ₹{booking.servicePrice || 0}
-  </div>
-</div>
+                      {/* SERVICE DETAILS */}
+
+                      <div
+                        style={{
+                          marginTop:
+                            "8px",
+                          padding:
+                            "10px 12px",
+                          borderRadius:
+                            "10px",
+                          background:
+                            "rgba(124, 58, 237, 0.10)",
+                          border:
+                            "1px solid rgba(124, 58, 237, 0.18)"
+                        }}
+                      >
+
+                        <strong>
+
+                          🔧{" "}
+
+                          {booking.serviceName ||
+                            "Service not available"}
+
+                        </strong>
+
+
+                        <div
+                          style={{
+                            fontSize:
+                              "13px",
+                            opacity:
+                              0.75,
+                            marginTop:
+                              "4px"
+                          }}
+                        >
+
+                          {booking.serviceCategory ||
+                            "General"}
+
+                          {" • "}
+
+                          ₹
+                          {booking.servicePrice ??
+                            0}
+
+                        </div>
+
+                      </div>
+
+
                       <small>
                         {booking.address ||
                           "No address"}
@@ -1994,11 +2363,17 @@ function TrackBookingPage() {
         setBooking(null);
 
 
-    const response = await getBookingById(
-  bookingId.trim()
-);
+        const response =
+          await getBookingById(
+            bookingId.trim()
+          );
 
-setBooking(response.data);    
+
+        setBooking(
+          response.data
+        );
+
+
       } catch (error) {
 
         console.error(
@@ -2008,7 +2383,8 @@ setBooking(response.data);
 
 
         setError(
-          error.message ||
+          error?.response?.data
+            ?.message ||
           "Booking not found."
         );
 
@@ -2046,7 +2422,6 @@ setBooking(response.data);
   return (
     <>
       <Navbar />
-
 
       <div className="success-page">
 
@@ -2143,6 +2518,36 @@ setBooking(response.data);
               </h2>
 
 
+              {/* SERVICE */}
+
+              <p>
+                <b>
+                  Service:
+                </b>{" "}
+                {booking.serviceName ||
+                  "Service not available"}
+              </p>
+
+
+              <p>
+                <b>
+                  Category:
+                </b>{" "}
+                {booking.serviceCategory ||
+                  "General"}
+              </p>
+
+
+              <p>
+                <b>
+                  Price:
+                </b>{" "}
+                ₹
+                {booking.servicePrice ??
+                  0}
+              </p>
+
+
               <p>
                 <b>
                   Customer:
@@ -2189,7 +2594,6 @@ setBooking(response.data);
                   Status:
                 </b>{" "}
 
-
                 <span
                   className={`badge ${
                     getStatusClass(
@@ -2229,9 +2633,14 @@ function Footer() {
     <footer>
 
       <div className="brand">
-  <span className="brand-mark">AB</span>
-  Service<span>Hub</span>
-</div>
+
+        <span className="brand-mark">
+          AB
+        </span>
+
+        Service<span>Hub</span>
+
+      </div>
 
 
       <p>
@@ -2292,6 +2701,7 @@ export default function App() {
       />
 
     </Routes>
+    
 
   );
 

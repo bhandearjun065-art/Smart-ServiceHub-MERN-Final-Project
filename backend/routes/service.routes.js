@@ -19,6 +19,28 @@ router.get("/", async (req, res) => {
     });
   }
 });
+// ================= GET SINGLE SERVICE =================
+
+router.get("/:id", async (req, res) => {
+  try {
+    const service = await Service.findById(
+      req.params.id
+    );
+
+    if (!service) {
+      return res.status(404).json({
+        message: "Service not found"
+      });
+    }
+
+    res.json(service);
+
+  } catch (error) {
+    res.status(400).json({
+      message: "Invalid service ID"
+    });
+  }
+});
 
 
 // ================= ADD SERVICE =================

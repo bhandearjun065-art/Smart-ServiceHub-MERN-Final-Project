@@ -25,7 +25,9 @@ export const login = (data) => {
 export const getServices = () => {
   return api.get("/services");
 };
-
+export const getServiceById = (id) => {
+  return api.get(`/services/${id}`);
+};
 
 export const createService = (data) => {
   const token = localStorage.getItem("adminToken");
