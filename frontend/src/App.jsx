@@ -28,7 +28,8 @@ import {
   createBooking,
   getBookings,
   updateBookingStatus,
-  getServices,getBookingById
+  getServices,getBookingById,
+  createService
 } from "./services/api.js";
 
 import AdminLogin from "./AdminLogin.jsx";
@@ -115,10 +116,10 @@ function Navbar() {
         onClick={() => setOpen(false)}
       >
         <span className="brand-mark">
-          <Sparkles size={18} />
-        </span>
+  AB
+</span>
 
-        Service<span>Hub</span>
+Service<span>Hub</span>
       </Link>
 
 
@@ -203,7 +204,18 @@ function Home() {
 
   const [services, setServices] =
     useState(defaultServices);
+const [showAddService, setShowAddService] = useState(false);
 
+const [newService, setNewService] = useState({
+  title: "",
+  category: "",
+  price: "",
+  duration: "",
+  image: "",
+  rating: ""
+});
+
+const isAdmin = !!localStorage.getItem("adminToken");
 
   useEffect(() => {
 
@@ -250,7 +262,60 @@ function Home() {
 
     loadServices();
 
-  }, []);
+  }, []); 
+  const handleAddService = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await createService({
+      title: newService.title,
+      category: newService.category,
+      price: Number(newService.price),
+      duration: newService.duration,
+      image: newService.image || "🔧",
+      rating: Number(newService.rating) || 5,
+      active: true
+    });
+
+    const service = response.data;
+
+    const formattedService = {
+      id: service._id,
+      title: service.title,
+      category: service.category || "General",
+      price: service.price || 0,
+      time: service.duration || "1 hr",
+      icon: service.image || "🔧",
+      rating: service.rating || 5
+    };
+
+    setServices((previous) => [
+      ...previous,
+      formattedService
+    ]);
+
+    setNewService({
+      title: "",
+      category: "",
+      price: "",
+      duration: "",
+      image: "",
+      rating: ""
+    });
+
+    setShowAddService(false);
+
+    alert("Service added successfully!");
+
+  } catch (error) {
+    console.error("Add service error:", error);
+
+    alert(
+      error?.response?.data?.message ||
+      "Failed to add service."
+    );
+  }
+};
 
 
   const filtered =
@@ -433,6 +498,19 @@ function Home() {
                 Everything you need,
                 <em> in one place.</em>
               </h2>
+              {isAdmin && (
+  <button
+    className="btn primary"
+    type="button"
+    onClick={() =>
+      setShowAddService(!showAddService)
+    }
+  >
+    {showAddService
+      ? "✕ Close"
+      : "+ Add Service"}
+  </button>
+)}
 
             </div>
 
@@ -455,6 +533,122 @@ function Home() {
 
 
           <div className="service-grid">
+            {isAdmin && showAddService && (
+  <form
+    className="booking-form"
+    onSubmit={handleAddService}
+    style={{ marginBottom: "30px" }}
+  >
+    <h2>Add New Service</h2>
+
+    <label>
+      Service Title
+      <input
+        type="text"
+        required
+        value={newService.title}
+        onChange={(e) =>
+          setNewService({
+            ...newService,
+            title: e.target.value
+          })
+        }
+        placeholder="e.g. Mobile Repair"
+      />
+    </label>
+
+    <label>
+      Category
+      <input
+        type="text"
+        required
+        value={newService.category}
+        onChange={(e) =>
+          setNewService({
+            ...newService,
+            category: e.target.value
+          })
+        }
+        placeholder="e.g. Electronics"
+      />
+    </label>
+
+    <label>
+      Price
+      <input
+        type="number"
+        required
+        min="0"
+        value={newService.price}
+        onChange={(e) =>
+          setNewService({
+            ...newService,
+            price: e.target.value
+          })
+        }
+        placeholder="500"
+      />
+    </label>
+
+    <label>
+      Duration
+      <input
+        type="text"
+        required
+        value={newService.duration}
+        onChange={(e) =>
+          setNewService({
+            ...newService,
+            duration: e.target.value
+          })
+        }
+        placeholder="1 hr"
+      />
+    </label>
+
+    <label>
+      Image / Icon
+      <input
+        type="text"
+        value={newService.image}
+        onChange={(e) =>
+          setNewService({
+            ...newService,
+            image: e.target.value
+          })
+        }
+        placeholder="🔧"
+      />
+    </label>
+
+    <label>
+      Rating
+      <input
+        type="number"
+        min="0"
+        max="5"
+        step="0.1"
+        value={newService.rating}
+        onChange={(e) =>
+          setNewService({
+            ...newService,
+            rating: e.target.value
+          })
+        }
+        placeholder="5"
+      />
+    </label>
+
+    <button
+      type="submit"
+      className="btn primary"
+    >
+      Add Service
+    </button>
+  </form>
+)}
+
+<div className="service-grid"></div>
 
             {filtered.map(
               (s, i) => (
@@ -655,21 +849,20 @@ function Home() {
 
           <div className="person">
 
+
             <div className="avatar">
-              AK
-            </div>
+  AB
+</div>
 
-            <div>
+<div>
+  <b>
+    Arjun D Bhande
+  </b>
 
-              <b>
-                Aditya Kulkarni
-              </b>
-
-              <span>
-                Verified customer · Pune
-              </span>
-
-            </div>
+  <span>
+    Founder & Owner · ServiceHub
+  </span>
+</div>
 
           </div>
 
@@ -2014,8 +2207,9 @@ function Footer() {
     <footer>
 
       <div className="brand">
-        ✦ Service<span>Hub</span>
-      </div>
+  <span className="brand-mark">AB</span>
+  Service<span>Hub</span>
+</div>
 
 
       <p>
