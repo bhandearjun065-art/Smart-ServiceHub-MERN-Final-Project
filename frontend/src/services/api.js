@@ -43,7 +43,7 @@ export const createService = (data) => {
 export const updateService = (id, data) => {
   const token = localStorage.getItem("adminToken");
 
-  return api.put(`/services/${id}`, data, {
+  return api.patch(`/services/${id}`, data, {
     headers: {
       Authorization: `Bearer ${token}`
     }
